@@ -3,102 +3,97 @@ using UnityEngine;
 
 public class Patient17StoryController : MonoBehaviour
 {
-    public Choice2BranchController choice2Controller;
+    [Header("Dialogue")]
+    public SpatialDialogueLinePlayer dialoguePlayer;
 
+    [Header("Opening Audio")]
+    public AudioClip openingLine01;
+    public AudioClip openingLine02;
+    public AudioClip openingLine03;
+    public AudioClip openingLine04;
+    public AudioClip openingLine05;
+
+    [Header("Choice")]
     public GameObject choice03;
 
-    private bool started = false;
+    [Header("State")]
+    public bool sequenceStarted = false;
+    public bool openingFinished = false;
 
+    private void Start()
+    {
+        if (choice03 != null)
+        {
+            choice03.SetActive(false);
+        }
+    }
 
     public void StartPatient17Sequence()
     {
-        if (started)
+        if (sequenceStarted)
+        {
             return;
+        }
 
-        started = true;
+        sequenceStarted = true;
 
-        StartCoroutine(Patient17Sequence());
+        StartCoroutine(OpeningSequence());
     }
 
-
-    private IEnumerator Patient17Sequence()
+    private IEnumerator OpeningSequence()
     {
-        Debug.Log("PATIENT 17: So you found a way in.");
+        if (dialoguePlayer == null)
+        {
+            yield break;
+        }
 
-        yield return new WaitForSeconds(2f);
+        yield return StartCoroutine(
+            dialoguePlayer.PlayLine(
+                "So you found a way in.",
+                openingLine01
+            )
+        );
 
+        yield return StartCoroutine(
+            dialoguePlayer.PlayLine(
+                "Did they tell you that you're ready to leave?",
+                openingLine02
+            )
+        );
 
-        Debug.Log("PATIENT 17: Did they tell you that you're ready to leave?");
+        yield return StartCoroutine(
+            dialoguePlayer.PlayLine(
+                "They told me the same thing.",
+                openingLine03
+            )
+        );
 
-        yield return new WaitForSeconds(3f);
+        yield return StartCoroutine(
+            dialoguePlayer.PlayLine(
+                "Before you go...",
+                openingLine04
+            )
+        );
 
+        yield return StartCoroutine(
+            dialoguePlayer.PlayLine(
+                "Do you want to know what they didn't tell you?",
+                openingLine05
+            )
+        );
 
-        Debug.Log("PATIENT 17: They told me the same thing.");
+        openingFinished = true;
 
-        yield return new WaitForSeconds(3f);
+        ShowChoice03();
+    }
 
-
-        PlayBranchMemory();
-
-
-        yield return new WaitForSeconds(5f);
-
-
-        Debug.Log("PATIENT 17: There is something they didn't tell you.");
-
-        yield return new WaitForSeconds(3f);
-
-
-        Debug.Log("PATIENT 17: There aren't two Patient 17s.");
-
-        yield return new WaitForSeconds(3f);
-
-
-        Debug.Log("PATIENT 17: There never were.");
-
-        yield return new WaitForSeconds(4f);
-
-
-        Debug.Log("PATIENT 17: I'm the part of you that you keep trying to leave behind.");
-
-
-        yield return new WaitForSeconds(5f);
-
-
-        Debug.Log("PATIENT 17: Are you still going to leave me here?");
-
-
+    private void ShowChoice03()
+    {
         if (choice03 != null)
         {
             choice03.SetActive(true);
         }
-    }
 
-
-
-    private void PlayBranchMemory()
-    {
-        if (choice2Controller == null)
-            return;
-
-
-        if (choice2Controller.choseDoctorOffice)
-        {
-            Debug.Log("PATIENT 17: You saw the record.");
-
-            Debug.Log("PATIENT 17: DISCHARGE STATUS: INCOMPLETE.");
-
-            Debug.Log("PATIENT 17: But they told you that you were ready.");
-        }
-
-
-        else if (choice2Controller.choseNurseLounge)
-        {
-            Debug.Log("PATIENT 17: You saw what they wrote.");
-
-            Debug.Log("PATIENT 17: Keeps asking to leave.");
-
-            Debug.Log("PATIENT 17: You've been asking too, haven't you?");
-        }
+        Debug.Log("CHOICE 03: Stay and listen, or leave.");
     }
 }
